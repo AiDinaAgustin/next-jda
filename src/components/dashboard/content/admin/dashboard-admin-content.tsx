@@ -4,6 +4,7 @@ import { getStudentCount } from "@/app/api/student";
 import { getTeacherCount } from "@/app/api/teacher";
 import { getClassCount } from "@/app/api/class";
 import { TableTeacher } from "@/components/dashboard/content/admin/teacher/table-teacher";
+import { TableSubject } from "@/components/dashboard/content/admin/subject/table-subject";
 
 export async function DashboardAdminContent() {
   const studentCount = await getStudentCount();
@@ -47,6 +48,7 @@ export async function DashboardAdminContent() {
         </Card>
       </div>
       <TableTeacher />
+      <TableSubject />
     </div>
   );
 }
