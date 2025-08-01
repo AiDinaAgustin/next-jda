@@ -1,7 +1,9 @@
+import { RegisterForm } from "@/components/auth/form/register-form";
+
 export default function RegisterPage() {
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <h1 className="text-2xl font-bold">Register Page</h1>
-    </div>
+    <>
+      <RegisterForm className="w-full max-w-md" />
+    </>
   );
 }

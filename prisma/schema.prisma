@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Absensi {
+  id              String          @id
+  siswaId         String
+  jadwalId        String
+  tanggal         DateTime
+  status          StatusAbsensi
+  keterangan      String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime
+  JadwalPelajaran JadwalPelajaran @relation(fields: [jadwalId], references: [id])
+  Siswa           Siswa           @relation(fields: [siswaId], references: [id])
+}
+
+model Guru {
+  id              String            @id
+  userId          String            @unique
+  nama            String
+  nip             String?
+  alamat          String?
+  noHp            String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  User            User              @relation(fields: [userId], references: [id])
+  JadwalPelajaran JadwalPelajaran[]
+  Kelas           Kelas[]
+  Nilai           Nilai[]
+}
+
+model JadwalPelajaran {
+  id            String        @id
+  guruId        String
+  mapelId       String
+  kelasId       String
+  hari          Hari
+  jamMulai      DateTime
+  jamSelesai    DateTime
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+  Absensi       Absensi[]
+  Guru          Guru          @relation(fields: [guruId], references: [id])
+  Kelas         Kelas         @relation(fields: [kelasId], references: [id])
+  MataPelajaran MataPelajaran @relation(fields: [mapelId], references: [id])
+}
+
+model Kelas {
+  id              String            @id
+  namaKelas       String
+  tingkat         Int
+  waliKelasId     String?
+  tahunAjaranId   String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  JadwalPelajaran JadwalPelajaran[]
+  TahunAjaran     TahunAjaran       @relation(fields: [tahunAjaranId], references: [id])
+  Guru            Guru?             @relation(fields: [waliKelasId], references: [id])
+  SiswaKelas      SiswaKelas[]
+}
+
+model MataPelajaran {
+  id              String            @id
+  namaMapel       String
+  kodeMapel       String            @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  JadwalPelajaran JadwalPelajaran[]
+  Nilai           Nilai[]
+}
+
+model Nilai {
+  id            String        @id
+  siswaId       String
+  mapelId       String
+  guruId        String
+  semester      Semester
+  jenisNilai    JenisNilai
+  nilai         Float
+  tanggalInput  DateTime
+  tahunAjaranId String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+  Guru          Guru          @relation(fields: [guruId], references: [id])
+  MataPelajaran MataPelajaran @relation(fields: [mapelId], references: [id])
+  Siswa         Siswa         @relation(fields: [siswaId], references: [id])
+  TahunAjaran   TahunAjaran   @relation(fields: [tahunAjaranId], references: [id])
+}
+
+model Siswa {
+  id           String       @id
+  nama         String
+  nis          String       @unique
+  jenisKelamin JenisKelamin
+  alamat       String?
+  noHpOrtu     String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  Absensi      Absensi[]
+  Nilai        Nilai[]
+  SiswaKelas   SiswaKelas[]
+}
+
+model SiswaKelas {
+  id            String      @id
+  siswaId       String
+  kelasId       String
+  tahunAjaranId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime
+  Kelas         Kelas       @relation(fields: [kelasId], references: [id])
+  Siswa         Siswa       @relation(fields: [siswaId], references: [id])
+  TahunAjaran   TahunAjaran @relation(fields: [tahunAjaranId], references: [id])
+}
+
+model TahunAjaran {
+  id         String       @id
+  tahun      String       @unique
+  isAktif    Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime
+  Kelas      Kelas[]
+  Nilai      Nilai[]
+  SiswaKelas SiswaKelas[]
+}
+
+model User {
+  id        String   @id
+  username  String   @unique
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Guru      Guru?
+}
+
+enum Hari {
+  Senin
+  Selasa
+  Rabu
+  Kamis
+  Jumat
+  Sabtu
+}
+
+enum JenisKelamin {
+  L
+  P
+}
+
+enum JenisNilai {
+  UH
+  Tugas
+  UTS
+  UAS
+}
+
+enum Role {
+  admin
+  guru
+  siswa
+}
+
+enum Semester {
+  Ganjil
+  Genap
+}
+
+enum StatusAbsensi {
+  hadir
+  izin
+  sakit
+  alfa
+}
